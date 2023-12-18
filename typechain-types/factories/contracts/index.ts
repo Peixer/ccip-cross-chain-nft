@@ -4,4 +4,5 @@
 export * as utils from "./utils";
 export { DestinationMinter__factory } from "./DestinationMinter__factory";
 export { MyNFT__factory } from "./MyNFT__factory";
+export { MyNFTSource__factory } from "./MyNFTSource__factory";
 export { SourceMinter__factory } from "./SourceMinter__factory";

@@ -4,9 +4,9 @@
 
 import { Contract, Interface, type ContractRunner } from "ethers";
 import type {
-  IERC721Metadata,
-  IERC721MetadataInterface,
-} from "../../../../../../@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata";
+  ERC721Burnable,
+  ERC721BurnableInterface,
+} from "../../../../../../@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable";
 
 const _abi = [
   {
@@ -114,7 +114,7 @@ const _abi = [
     outputs: [
       {
         internalType: "uint256",
-        name: "balance",
+        name: "",
         type: "uint256",
       },
     ],
@@ -129,11 +129,24 @@ const _abi = [
         type: "uint256",
       },
     ],
+    name: "burn",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "tokenId",
+        type: "uint256",
+      },
+    ],
     name: "getApproved",
     outputs: [
       {
         internalType: "address",
-        name: "operator",
+        name: "",
         type: "address",
       },
     ],
@@ -189,7 +202,7 @@ const _abi = [
     outputs: [
       {
         internalType: "address",
-        name: "owner",
+        name: "",
         type: "address",
       },
     ],
@@ -238,7 +251,7 @@ const _abi = [
       },
       {
         internalType: "bytes",
-        name: "data",
+        name: "_data",
         type: "bytes",
       },
     ],
@@ -256,7 +269,7 @@ const _abi = [
       },
       {
         internalType: "bool",
-        name: "_approved",
+        name: "approved",
         type: "bool",
       },
     ],
@@ -341,15 +354,15 @@ const _abi = [
   },
 ] as const;
 
-export class IERC721Metadata__factory {
+export class ERC721Burnable__factory {
   static readonly abi = _abi;
-  static createInterface(): IERC721MetadataInterface {
-    return new Interface(_abi) as IERC721MetadataInterface;
+  static createInterface(): ERC721BurnableInterface {
+    return new Interface(_abi) as ERC721BurnableInterface;
   }
   static connect(
     address: string,
     runner?: ContractRunner | null
-  ): IERC721Metadata {
-    return new Contract(address, _abi, runner) as unknown as IERC721Metadata;
+  ): ERC721Burnable {
+    return new Contract(address, _abi, runner) as unknown as ERC721Burnable;
   }
 }

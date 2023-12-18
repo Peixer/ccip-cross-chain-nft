@@ -47,7 +47,7 @@ export interface SourceMinterInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "mint",
-    values: [BigNumberish, AddressLike, BigNumberish]
+    values: [BigNumberish, AddressLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
@@ -167,7 +167,8 @@ export interface SourceMinter extends BaseContract {
     [
       destinationChainSelector: BigNumberish,
       receiver: AddressLike,
-      payFeesIn: BigNumberish
+      payFeesIn: BigNumberish,
+      tokenId: BigNumberish
     ],
     [void],
     "nonpayable"
@@ -206,7 +207,8 @@ export interface SourceMinter extends BaseContract {
     [
       destinationChainSelector: BigNumberish,
       receiver: AddressLike,
-      payFeesIn: BigNumberish
+      payFeesIn: BigNumberish,
+      tokenId: BigNumberish
     ],
     [void],
     "nonpayable"

@@ -21,13 +21,14 @@ import type {
   TypedLogDescription,
   TypedListener,
   TypedContractMethod,
-} from "../../../../common";
+} from "../../../../../common";
 
-export interface ERC721Interface extends Interface {
+export interface ERC721BurnableInterface extends Interface {
   getFunction(
     nameOrSignature:
       | "approve"
       | "balanceOf"
+      | "burn"
       | "getApproved"
       | "isApprovedForAll"
       | "name"
@@ -53,6 +54,7 @@ export interface ERC721Interface extends Interface {
     functionFragment: "balanceOf",
     values: [AddressLike]
   ): string;
+  encodeFunctionData(functionFragment: "burn", values: [BigNumberish]): string;
   encodeFunctionData(
     functionFragment: "getApproved",
     values: [BigNumberish]
@@ -94,6 +96,7 @@ export interface ERC721Interface extends Interface {
 
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
     data: BytesLike
@@ -186,11 +189,11 @@ export namespace TransferEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export interface ERC721 extends BaseContract {
-  connect(runner?: ContractRunner | null): ERC721;
+export interface ERC721Burnable extends BaseContract {
+  connect(runner?: ContractRunner | null): ERC721Burnable;
   waitForDeployment(): Promise<this>;
 
-  interface: ERC721Interface;
+  interface: ERC721BurnableInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -236,6 +239,8 @@ export interface ERC721 extends BaseContract {
   >;
 
   balanceOf: TypedContractMethod<[owner: AddressLike], [bigint], "view">;
+
+  burn: TypedContractMethod<[tokenId: BigNumberish], [void], "nonpayable">;
 
   getApproved: TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
 
@@ -302,6 +307,9 @@ export interface ERC721 extends BaseContract {
   getFunction(
     nameOrSignature: "balanceOf"
   ): TypedContractMethod<[owner: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "burn"
+  ): TypedContractMethod<[tokenId: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "getApproved"
   ): TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
