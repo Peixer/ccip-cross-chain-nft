@@ -7,5 +7,12 @@
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",
     "ethers": "^6.8.1",
     "hardhat": "^2.14.1"
+  },
+  "scripts": {
+    "test": "npx hardhat test",
+    "compile": "npx hardhat compile"
+  },
+  "dependencies": {
+    "chai": "^4.3.10"
   }
 }
