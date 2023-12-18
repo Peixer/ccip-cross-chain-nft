@@ -3,7 +3,7 @@ import { task } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";
 import { getPayFeesIn, getPrivateKey, getProviderRpcUrl, getRouterConfig } from "./utils";
 import { Wallet, ethers } from "ethers";
-import { SourceMinter, SourceMinter__factory } from "../typechain-types";
+import { SourceMinter, SourceMinter__factory, MyNFTSource__factory, MyNFTSource } from "../typechain-types";
 import { Spinner } from "../utils/spinner";
 import { getCcipMessageId } from "./helpers";
 
@@ -13,9 +13,10 @@ task(`cross-chain-mint`, `Mints the new NFT by sending the Cross-Chain Message`)
     .addParam(`destinationBlockchain`, `The name of the destination blockchain (for example polygonMumbai)`)
     .addParam(`destinationMinter`, `The address of the DestinationMinter.sol smart contract on the destination blockchain`)
     .addParam(`payFeesIn`, `Choose between 'Native' and 'LINK'`)
+    .addParam(`myNftSource`, `The address of the MyNFTSource.sol smart contract on the source blockchain`)
     .addParam(`tokenId`, `Token Id to burn on the source blockchain`)
     .setAction(async (taskArguments: TaskArguments) => {
-        const { sourceBlockchain, sourceMinter, destinationBlockchain, destinationMinter, payFeesIn, tokenId } = taskArguments;
+        const { sourceBlockchain, sourceMinter, destinationBlockchain, destinationMinter, payFeesIn, myNftSource, tokenId } = taskArguments;
 
         const privateKey = getPrivateKey();
         const sourceRpcProviderUrl = getProviderRpcUrl(sourceBlockchain);
@@ -27,6 +28,10 @@ task(`cross-chain-mint`, `Mints the new NFT by sending the Cross-Chain Message`)
         const spinner: Spinner = new Spinner();
 
         const sourceMinterContract: SourceMinter = SourceMinter__factory.connect(sourceMinter, signer)
+
+        const MyNFTSourceContract: MyNFTSource = MyNFTSource__factory.connect(myNftSource, signer);
+        const txApprove = await MyNFTSourceContract.connect(signer).setApprovalForAll(sourceMinterContract.target, true);
+        await txApprove.wait();
 
         const destinationChainSelector = getRouterConfig(destinationBlockchain).chainSelector;
         const fees = getPayFeesIn(payFeesIn);
