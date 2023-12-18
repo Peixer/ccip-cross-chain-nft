@@ -5,6 +5,7 @@ import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interface
 import {IRouterClient} from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
 import {Client} from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import {Withdraw} from "./utils/Withdraw.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
 /**
  * THIS IS AN EXAMPLE CONTRACT THAT USES HARDCODED VALUES FOR CLARITY.
@@ -19,12 +20,14 @@ contract SourceMinter is Withdraw {
 
     address immutable i_router;
     address immutable i_link;
+    address immutable i_smartContractAddress;
 
     event MessageSent(bytes32 messageId);
 
-    constructor(address router, address link) {
+    constructor(address router, address link, address smartContractAddress) {
         i_router = router;
         i_link = link;
+        i_smartContractAddress = smartContractAddress;
         LinkTokenInterface(i_link).approve(i_router, type(uint256).max);
     }
 
@@ -33,8 +36,10 @@ contract SourceMinter is Withdraw {
     function mint(
         uint64 destinationChainSelector,
         address receiver,
-        PayFeesIn payFeesIn
+        PayFeesIn payFeesIn,
+        uint256 tokenId
     ) external {
+        ERC721Burnable(i_smartContractAddress).burn(tokenId);
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(receiver),
             data: abi.encodeWithSignature("mint(address)", msg.sender),
