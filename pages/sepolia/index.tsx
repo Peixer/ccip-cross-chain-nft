@@ -1,11 +1,6 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
-import {
-  ConnectWallet,
-  useAddress,
-  useContract,
-  useOwnedNFTs,
-} from "@thirdweb-dev/react";
+import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 import { useEffect, useState } from "react";
 import { Alchemy, Network } from "alchemy-sdk";
 import Link from "next/link";
@@ -18,7 +13,7 @@ export default function Home() {
 
   const settings = {
     apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, // Replace with your Alchemy API Key.
-    network: Network.MATIC_MUMBAI, // Replace with your network.
+    network: Network.ETH_SEPOLIA, // Replace with your network.
   };
   const alchemy = new Alchemy(settings);
 
@@ -29,6 +24,7 @@ export default function Home() {
       setNfts(nfts.ownedNfts);
     });
   }, [address]);
+  
 
   return (
     <main
@@ -58,12 +54,12 @@ export default function Home() {
               {nfts && (
                 <div className="flex flex-col items-center justify-center">
                   <p className="text-2xl font-bold">Your NFTs</p>
-                  <Link href={"/sepolia"}>
+                  <Link href={"/"}>
                     <p className="text-2xl font-bold">Other Chains ⛓️</p>
                   </Link>
-
                   <div className="flex flex-row flex-wrap items-center pt-6">
                     {nfts.map((nft: any) => {
+                      // debugger;
                       return (
                         <div
                           key={nft.tokenId}

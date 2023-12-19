@@ -1,5 +1,5 @@
-import '@/styles/globals.css'
-import type { AppProps } from 'next/app'
+import "@/styles/globals.css";
+import type { AppProps } from "next/app";
 import {
   ThirdwebProvider,
   metamaskWallet,
@@ -12,7 +12,8 @@ import {
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <ThirdwebProvider
-      clientId="604a5a0a55ca96b706c901437960ea6b"
+      activeChain={"mumbai"}
+      clientId={process.env.NEXT_PUBLIC_THIRD_WEB_CLIENT_ID}
       supportedWallets={[
         metamaskWallet(),
         coinbaseWallet({ recommended: true }),
