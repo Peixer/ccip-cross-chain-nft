@@ -17,7 +17,7 @@ contract MyNFTSource is ERC721URIStorage, Ownable, ERC721Burnable {
 
     constructor() ERC721("MyNFTSource", "MNFTS") {}
 
-    function mint(address to) public onlyOwner {
+    function mint(address to) public {
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, TOKEN_URI);
         unchecked {
