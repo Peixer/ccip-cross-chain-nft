@@ -14,8 +14,8 @@ export function Navbar() {
         <div className={styles.navLeft}>
           <Link href="/" className={`${styles.homeLink} ${styles.navLeft}`}>
             <Image src="/logo.png" width={48} height={48} alt="FusionCube" />
+            <p className="text-2xl font-bold text-white">FusionCube</p>
           </Link>
-          <p className="text-2xl font-bold text-white">FusionCube</p>
 
           <div className={styles.navMiddle}>
             <Link href="/mumbai" className={styles.link}>
