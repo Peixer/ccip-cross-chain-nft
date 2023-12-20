@@ -18,7 +18,7 @@ export function Navbar() {
           <p className="text-2xl font-bold text-white">FusionCube</p>
 
           <div className={styles.navMiddle}>
-            <Link href="/" className={styles.link}>
+            <Link href="/mumbai" className={styles.link}>
               Polygon
             </Link>
             <Link href="/sepolia" className={styles.link}>
