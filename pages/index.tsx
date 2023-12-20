@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Alchemy, Network } from "alchemy-sdk";
 import Link from "next/link";
 import Web3 from "web3";
+import Alert from "@/components/Alert";
 
 const inter = Inter({ subsets: ["latin"] });
 const settings = {
@@ -22,6 +23,7 @@ const DestinationMinterContractAddress =
 export default function Home() {
   const address = useAddress();
   const [nfts, setNfts] = useState<any>([]);
+  const [show, setShow] = useState(false);
 
   function getWeb3Instance() {
     const web3 = new Web3(window.ethereum);
@@ -51,62 +53,58 @@ export default function Home() {
     });
   }
 
-  setTimeout(() => {
+  useEffect(() => {
     loadNFts();
-  }, 2000);
+  }, [address]);
 
-  function mint() {
-    const { MyNFTSourceContract } = getWeb3Instance();
+  async function mint() {
+    try {
+      const { MyNFTSourceContract } = getWeb3Instance();
 
-    MyNFTSourceContract.methods
-      .mint(address)
-      .send({ from: address })
-      .on("transactionHash", function (hash: any) {
-        console.log("transactionHash", hash);
-      })
-      .on("receipt", (receipt: any) => {
-        console.log("receipt", receipt);
-        loadNFts();
-      })
-      .on("error", (error: any) => {
-        console.log("error", error);
-      });
+      await MyNFTSourceContract.methods
+        .mint(address)
+        .send({ from: address })
+        .on("transactionHash", function (hash: any) {
+          console.log("transactionHash", hash);
+        });
+
+      loadNFts();
+    } catch (error) {
+      setShow(true);
+      setTimeout(() => {
+        setShow(false);
+      }, 3000);
+    }
   }
 
   async function crossChain() {
-    const { SourceMinterContract, MyNFTSourceContract } = getWeb3Instance();
+    try {
+      const { SourceMinterContract, MyNFTSourceContract } = getWeb3Instance();
 
-    const isApprovedForAllReturn = await MyNFTSourceContract.methods
-      .isApprovedForAll(address, SourceMinterContractAddress)
-      .call();
+      const isApprovedForAllReturn = await MyNFTSourceContract.methods
+        .isApprovedForAll(address, SourceMinterContractAddress)
+        .call();
 
-    if (!isApprovedForAllReturn){
-      await MyNFTSourceContract.methods
-        .setApprovalForAll(SourceMinterContractAddress, true)
+      if (!isApprovedForAllReturn) {
+        await MyNFTSourceContract.methods
+          .setApprovalForAll(SourceMinterContractAddress, true)
+          .send({ from: address });
+      }
+
+      const destinationChainSelector: bigint = BigInt("16015286601757825753");
+      const payFeesIn = 1;
+      const receiver = DestinationMinterContractAddress;
+      await SourceMinterContract.methods
+        .mint(destinationChainSelector, receiver, payFeesIn, nfts[0].tokenId)
         .send({ from: address });
-    }
 
-    const destinationChainSelector: bigint = BigInt("16015286601757825753"); 
-    const payFeesIn = 1;
-    const receiver = DestinationMinterContractAddress;
-    SourceMinterContract.methods
-      .mint(
-        destinationChainSelector,
-        receiver,
-        payFeesIn,
-        nfts[0].tokenId
-      )
-      .send({ from: address })
-      .on("transactionHash", function (hash: any) {
-        console.log("transactionHash", hash);
-      })
-      .on("receipt", (receipt: any) => {
-        console.log("receipt", receipt);
-        loadNFts();
-      })
-      .on("error", (error: any) => {
-        console.log("error", error);
-      });
+      loadNFts();
+    } catch (error) {
+      setShow(true);
+      setTimeout(() => {
+        setShow(false);
+      }, 3000);
+    }
   }
 
   return (
@@ -114,23 +112,6 @@ export default function Home() {
       className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
     >
       <div className="z-10 max-w-5xl items-center font-mono text-sm flex-col w-full">
-        <div className="relative flex items-end right-0 end-0 place-content-between">
-          <Image
-            className=" align-middle justify-center"
-            src={"/logo.jpg"}
-            width={200}
-            height={150}
-            alt={""}
-          />
-          <ConnectWallet
-            theme={"dark"}
-            modalSize={"wide"}
-            dropdownPosition={{
-              side: "bottom",
-              align: "center",
-            }}
-          />
-        </div>
         <div className="flex flex-col p-6 w-full">
           {address && (
             <div className="flex flex-row items-center justify-center">
@@ -173,6 +154,7 @@ export default function Home() {
             </div>
           )}
         </div>
+        <Alert show={show} setShow={setShow} />
       </div>
     </main>
   );
