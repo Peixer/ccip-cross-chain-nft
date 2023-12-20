@@ -24,6 +24,7 @@ export default function Home() {
   const [nfts, setNfts] = useState<any>([]);
   const [show, setShow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingNft, setIsLoadingNft] = useState(false);
 
   function getWeb3Instance() {
     const web3 = new Web3(window.ethereum);
@@ -69,6 +70,7 @@ export default function Home() {
 
   async function mint() {
     try {
+      setIsLoadingNft(true);
       const { MyNFTSourceContract } = getWeb3Instance();
 
       await MyNFTSourceContract.methods
@@ -78,6 +80,7 @@ export default function Home() {
           console.log("transactionHash", hash);
         });
 
+      setIsLoadingNft(false);
       loadNFts();
     } catch (error) {
       setShow(true);
@@ -131,7 +134,7 @@ export default function Home() {
           onClick={mint}
           className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mt-10"
         >
-          Mint NFT ✨
+          {isLoadingNft ? "Minting..." : "Mint NFT ✨"}
         </button>
       </div>
       <div className="z-10 max-w-5xl items-center font-mono text-sm flex-col w-full">
