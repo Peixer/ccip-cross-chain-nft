@@ -168,9 +168,8 @@ export default function Home() {
             </div>
           )}
         </div>
-
-        <Alert show={show} setShow={setShow} />
       </div>
+      <Alert show={show} setShow={setShow} />
     </main>
   );
 }
