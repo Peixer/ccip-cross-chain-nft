@@ -6,6 +6,7 @@ import { Alchemy, Network } from "alchemy-sdk";
 import Link from "next/link";
 import Web3 from "web3";
 import Alert from "@/components/Alert";
+import { NFTCard } from "@/components/NFTCard";
 
 const inter = Inter({ subsets: ["latin"] });
 const settings = {
@@ -24,6 +25,7 @@ export default function Home() {
   const address = useAddress();
   const [nfts, setNfts] = useState<any>([]);
   const [show, setShow] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   function getWeb3Instance() {
     const web3 = new Web3(window.ethereum);
@@ -43,13 +45,23 @@ export default function Home() {
   }
 
   function loadNFts() {
+    setIsLoading(true);
     if (!address) return;
     alchemy.nft.getNftsForOwner(address).then((nfts: any) => {
-      setNfts(
-        nfts.ownedNfts.filter(
+      const filteredNfts = nfts.ownedNfts
+        .filter(
           (nft: any) => nft.contract.address === MyNFTSourceContractAddress
         )
-      );
+        .map((nft: any) => {
+          return {
+            ...nft,
+            metadata: {
+              ...nft.raw.metadata,
+            },
+          };
+        });
+      setNfts(filteredNfts);
+      setIsLoading(false);
     });
   }
 
@@ -77,7 +89,7 @@ export default function Home() {
     }
   }
 
-  async function crossChain() {
+  async function crossChain(nft: any) {
     try {
       const { SourceMinterContract, MyNFTSourceContract } = getWeb3Instance();
 
@@ -95,7 +107,7 @@ export default function Home() {
       const payFeesIn = 1;
       const receiver = DestinationMinterContractAddress;
       await SourceMinterContract.methods
-        .mint(destinationChainSelector, receiver, payFeesIn, nfts[0].tokenId)
+        .mint(destinationChainSelector, receiver, payFeesIn, nft.tokenId)
         .send({ from: address });
 
       loadNFts();
@@ -109,51 +121,53 @@ export default function Home() {
 
   return (
     <main
-      className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
+      className={`flex min-h-screen flex-col items-center p-24 ${inter.className}`}
     >
+      <div className="mb-8 text-center">
+        <h1 className="text-4xl font-bold text-white">
+          Polygon to Ethereum Bridge
+        </h1>
+
+        <button
+          type="button"
+          onClick={mint}
+          className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 mt-10"
+        >
+          Mint NFT ✨
+        </button>
+      </div>
       <div className="z-10 max-w-5xl items-center font-mono text-sm flex-col w-full">
         <div className="flex flex-col p-6 w-full">
           {address && (
             <div className="flex flex-row items-center justify-center">
-              {nfts && (
-                <div className="flex flex-col items-center justify-center">
-                  <p className="text-2xl font-bold">Your NFTs</p>
-                  <Link href={"/sepolia"}>
-                    <p className="text-2xl font-bold">Other Chains ⛓️</p>
-                  </Link>
+              {isLoading && (
+                <div className="mx-auto flex flex-wrap items-center justify-center gap-8">
+                  {Array.from({ length: 9 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="!h-60 !w-60 animate-pulse rounded-lg bg-gray-800"
+                    />
+                  ))}
+                </div>
+              )}
 
-                  <button className="button" onClick={mint}>
-                    MINT NFT
-                  </button>
-
-                  <button className="button" onClick={crossChain}>
-                    CROSS CHAIN
-                  </button>
-
-                  <div className="flex flex-row flex-wrap items-center pt-6">
-                    {nfts.map((nft: any) => {
-                      return (
-                        <div
-                          key={nft.tokenId}
-                          className="flex flex-col items-center justify-center m-4 max-w-[200px]"
-                        >
-                          <Image
-                            src={nft.image.cachedUrl}
-                            alt={nft.name}
-                            width={200}
-                            height={200}
-                          />
-                          <p className="text-sm">Name: {nft.name}</p>
-                          <p className="text-sm">Token Id {nft.tokenId}</p>
-                        </div>
-                      );
-                    })}
-                  </div>
+              {!isLoading && nfts && (
+                <div className="flex flex-wrap items-center justify-normal gap-2">
+                  {nfts.map((nft: any) => {
+                    return (
+                      <NFTCard
+                        nft={nft}
+                        key={nft.tokenId}
+                        onclick={crossChain}
+                      />
+                    );
+                  })}
                 </div>
               )}
             </div>
           )}
         </div>
+
         <Alert show={show} setShow={setShow} />
       </div>
     </main>
