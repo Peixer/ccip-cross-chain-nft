@@ -6,14 +6,15 @@ import { Alchemy, Network } from "alchemy-sdk";
 import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
+const MyNFTContractAddress = "0x3DB772DE51cF71e4318f0fB997c48dB0fa1fDbe0";
 
 export default function Home() {
   const address = useAddress();
   const [nfts, setNfts] = useState([]);
 
   const settings = {
-    apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY, // Replace with your Alchemy API Key.
-    network: Network.ETH_SEPOLIA, // Replace with your network.
+    apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
+    network: Network.ETH_SEPOLIA,
   };
   const alchemy = new Alchemy(settings);
 
@@ -21,10 +22,13 @@ export default function Home() {
     if (!address) return;
 
     alchemy.nft.getNftsForOwner(address).then((nfts: any) => {
-      setNfts(nfts.ownedNfts);
+      setNfts(
+        nfts.ownedNfts.filter(
+          (nft: any) => nft.contract.address === MyNFTContractAddress
+        ));
     });
   }, [address]);
-  
+
 
   return (
     <main
