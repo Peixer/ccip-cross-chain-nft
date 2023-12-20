@@ -1,9 +1,7 @@
-import Image from "next/image";
 import { Inter } from "next/font/google";
-import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
+import { useAddress } from "@thirdweb-dev/react";
 import { useEffect, useState } from "react";
 import { Alchemy, Network } from "alchemy-sdk";
-import Link from "next/link";
 import Web3 from "web3";
 import Alert from "@/components/Alert";
 import { NFTCard } from "@/components/NFTCard";
@@ -152,7 +150,7 @@ export default function Home() {
               )}
 
               {!isLoading && nfts && (
-                <div className="flex flex-wrap items-center justify-normal gap-2">
+                <div className="flex flex-wrap items-center justify-normal gap-8">
                   {nfts.map((nft: any) => {
                     return (
                       <NFTCard

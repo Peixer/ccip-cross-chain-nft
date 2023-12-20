@@ -16,6 +16,15 @@ export function Navbar() {
             <Image src="/logo.png" width={48} height={48} alt="FusionCube" />
           </Link>
           <p className="text-2xl font-bold text-white">FusionCube</p>
+
+          <div className={styles.navMiddle}>
+            <Link href="/" className={styles.link}>
+              Polygon
+            </Link>
+            <Link href="/sepolia" className={styles.link}>
+              Ethereum
+            </Link>
+          </div>
         </div>
 
         <div className={styles.navRight}>
