@@ -9,6 +9,7 @@ import {
   embeddedWallet,
 } from "@thirdweb-dev/react";
 import { Navbar } from "@/components/Navbar/Navbar";
+import { Footer } from "@/components/Footer";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -25,6 +26,7 @@ export default function App({ Component, pageProps }: AppProps) {
     >
       <Navbar />
       <Component {...pageProps} />
+      <Footer />
     </ThirdwebProvider>
   );
 }
